@@ -168,7 +168,7 @@ X_pca = pca.transform(X_train)
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
-ax.scatter(X_pca[:, 0], X_pca[:, 1], X_pca[:, 2], c=y_train, edgecolor='k', alpha=0.5)
+ax.scatter(X_pca[:, 0], X_pca[:, 1], X_pca[:, 2], c=y_train,cmap=plt.cm.prism, edgecolor='k', alpha=0.5)
 
 ax.set_xlabel('1st PC')
 ax.set_ylabel('2nd PC')
@@ -182,7 +182,7 @@ pca = PCA(n_components=2)
 pca.fit(X_train)
 X_pca = pca.transform(X_train)
 
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y_train, cmap='tab20', edgecolor='k', alpha=0.7)
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y_train, cmap=plt.cm.prism, edgecolor='k', alpha=0.7)
 plt.show()
 
 """# Vectors
