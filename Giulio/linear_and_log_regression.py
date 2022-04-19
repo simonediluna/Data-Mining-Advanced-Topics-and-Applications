@@ -165,12 +165,14 @@ b[np.not_equal.outer(i, j)] = coefficients.ravel()
 
 import seaborn as sns
 from sklearn.preprocessing import normalize
+from sklearn import preprocessing
 
 matrix=normalize(b, axis=1, norm='l2')
 
 """Heatmap of coefficients for the linear regression task. Everything is normalized with the l2 norm. This plot indicates how the variables are multicorreleted with each other """
 
-ax = sns.heatmap(matrix,cmap='Blues',vmin=0, vmax=1)
+ax = sns.heatmap(matrix,cmap='RdBu')
+ax.figure.savefig('lin_heatmap.pdf', bbox_inches = 'tight')
 
 """Now I want to see for which variable we have the best regression. I look at the values of r2 and indentify the best with a bar chart."""
 
@@ -204,7 +206,7 @@ for i in ax.patches:
     plt.text(i.get_width()+0.02, i.get_y()+0.5,
              str(round((i.get_width()), 2)),
              fontsize = 10, fontweight ='bold',
-             color ='grey')
+             color ='black')
  
 # Add Plot Title
 ax.set_title('R2 of linear regression for every attribute',
@@ -213,22 +215,7 @@ ax.set_title('R2 of linear regression for every attribute',
 # Show Plot
 plt.show()
 
-"""## Linear Regression in 2 dimensions
-
-useless shit
-"""
-
-reg = LinearRegression()
-reg.fit(X_train.T[0].reshape(-1, 1), X_train.T[1].reshape(-1, 1))
-y_pred = reg.predict(X_test.T[0].reshape(-1, 1)).reshape(1,-1)[0]
-
-print('R2: %.3f' % r2_score(y_test, y_pred))
-print('MSE: %.3f' % mean_squared_error(y_test, y_pred))
-print('MAE: %.3f' % mean_absolute_error(y_test, y_pred))
-
-plt.scatter(X_train.T[0], X_train.T[1],  color='black')
-plt.plot(X_test.T[0], y_pred, color='blue', linewidth=3, label='test')
-plt.show()
+ax.figure.savefig('r2_lin.pdf', bbox_inches = 'tight')
 
 """# Ridge
 
@@ -247,31 +234,91 @@ print('MAE: %.3f' % mean_absolute_error(y_test, y_pred))
 
 """do the same as you did for the linear regression, except that this time you have the ridge penalty."""
 
+coefficients=np.zeros(shape=(0,22))
+
+coeff_r2=[]
+
 for element in col_names:
   dummy_x_tr=X_train_df.loc[:, X_train_df.columns != element]
-  dummy_y_tr=X_train_df[[element]]
+  dummy_y_tr=X_train_df.loc[:, X_train_df.columns == element]
   dummy_x_te=X_test_df.loc[:, X_test_df.columns != element]
-  dummy_y_te=X_test_df[[element]]
+  dummy_y_te=X_test_df.loc[:, X_test_df.columns == element]
   X_test_dummy = dummy_x_te.values
   y_train_dummy = dummy_y_tr.values
   X_train_dummy = dummy_x_tr.values
   y_test_dummy = dummy_y_te.values
   reg = Ridge()
   reg.fit(X_train_dummy, y_train_dummy)
-  print('Multi regression for class ', element)
-  print('Coefficients: \n', reg.coef_)
-  print('Intercept: \n', reg.intercept_)
+
+  dum_coef=reg.coef_
+
+  
+  coefficients = np.append(coefficients, dum_coef, axis=0)
+
   y_pred = reg.predict(X_test_dummy)
-  print('R2: %.3f' % r2_score(y_test_dummy, y_pred))
-  print('MSE: %.3f' % mean_squared_error(y_test_dummy, y_pred))
-  print('MAE: %.3f' % mean_absolute_error(y_test_dummy, y_pred))
+
+  coeff_r2.append(r2_score(y_test_dummy, y_pred))
+
+b = np.zeros((coefficients.shape[0], coefficients.shape[1]+1), dtype=coefficients.dtype)
+
+i = np.arange(b.shape[0])
+
+j = np.arange(b.shape[1])
+
+b[np.not_equal.outer(i, j)] = coefficients.ravel()
+
+matrix=normalize(b, axis=1, norm='l2')
+
+ax = sns.heatmap(matrix,cmap='RdBu')
+ax.figure.savefig('ridge_heatmap.pdf', bbox_inches = 'tight')
+
+fig, ax = plt.subplots(figsize =(16, 9))
+ 
+# Horizontal Bar Plot
+ax.barh(col_names, coeff_r2)
+ 
+# Remove axes splines
+for s in ['top', 'bottom', 'left', 'right']:
+    ax.spines[s].set_visible(False)
+ 
+# Remove x, y Ticks
+ax.xaxis.set_ticks_position('none')
+ax.yaxis.set_ticks_position('none')
+ 
+# Add padding between axes and labels
+ax.xaxis.set_tick_params(pad = 5)
+ax.yaxis.set_tick_params(pad = 10)
+ 
+# Add x, y gridlines
+ax.grid(b = True, color ='grey',
+        linestyle ='-.', linewidth = 0.5,
+        alpha = 0.2)
+ 
+# Show top values
+ax.invert_yaxis()
+ 
+# Add annotation to bars
+for i in ax.patches:
+    plt.text(i.get_width()+0.02, i.get_y()+0.5,
+             str(round((i.get_width()), 2)),
+             fontsize = 10, fontweight ='bold',
+             color ='black')
+ 
+# Add Plot Title
+ax.set_title('R2 of linear regression for every attribute',
+             loc ='left', )
+ 
+# Show Plot
+plt.show()
+
+ax.figure.savefig('r2_lin.pdf', bbox_inches = 'tight')
 
 """# Lasso
 
 Select the best, worse and middle performing variables according to lasso regularization, then do a grid search to identify the best paramenters for alpha (tuning of hyperparameter)
 """
 
-variabili=['tGravityAcc-mean()-X','tBodyAcc-correlation()-X,Y','tGravityAcc-max()-Z']
+variabili=['tGravityAcc-mean()-X','tBodyAcc-correlation()-X,Y','fBodyGyro-maxInds-X']
 
 
 r2_to_plot=[]
@@ -307,33 +354,54 @@ fig, ax =plt.subplots()
 ax.set_xlabel("alpha")
 ax.set_ylabel("R2")
 ax.set_title("R2 vs alpha for various classes")
-ax.plot(alpha,r2_to_plot[0], marker ='o',label=variabili[0],drawstyle='steps-post')
-ax.plot(alpha,r2_to_plot[1], marker ='o',label=variabili[1],drawstyle='steps-post')
-ax.plot(alpha,r2_to_plot[2], marker ='o',label=variabili[2],drawstyle='steps-post')
+ax.plot(alpha,r2_to_plot[0], marker ='.',label=variabili[0],drawstyle='steps-post')
+ax.plot(alpha,r2_to_plot[1], marker ='.',label=variabili[1],drawstyle='steps-post')
+ax.plot(alpha,r2_to_plot[2], marker ='.',label=variabili[2],drawstyle='steps-post')
 ax.set_xscale('log')
 ax.legend()
+ax.figure.savefig('alpha_tuning.pdf', bbox_inches = 'tight')
+
 plt.show()
 
-dummy_x_tr=X_train_df.loc[:, X_train_df.columns != variabili[0]]
-dummy_y_tr=X_train_df[[variabili[0]]]
-dummy_x_te=X_test_df.loc[:, X_test_df.columns != variabili[0]]
-dummy_y_te=X_test_df[[variabili[0]]]
-X_test_dummy = dummy_x_te.values
-y_train_dummy = dummy_y_tr.values
-X_train_dummy = dummy_x_tr.values
-y_test_dummy = dummy_y_te.values
+for element in variabili:
+  dummy_x_tr=X_train_df.loc[:, X_train_df.columns != element]
+  dummy_y_tr=X_train_df[[element]]
+  dummy_x_te=X_test_df.loc[:, X_test_df.columns != element]
+  dummy_y_te=X_test_df[[element]]
+  X_test_dummy = dummy_x_te.values
+  y_train_dummy = dummy_y_tr.values
+  X_train_dummy = dummy_x_tr.values
+  y_test_dummy = dummy_y_te.values
 
-reg = Lasso(alpha=0.01)
-reg.fit(X_train_dummy, y_train_dummy)
-y_pred = reg.predict(X_test_dummy)
+  reg = Lasso(alpha=0.001)
+  reg.fit(X_train_dummy, y_train_dummy)
+  y_pred = reg.predict(X_test_dummy)
+  print('Multi regression for class ', element)
+  print('Coefficients: \n', reg.coef_)
+  print('Intercept: \n', reg.intercept_)
+  print('R2: %.3f' % r2_score(y_test_dummy, y_pred))
+  #print('MSE: %.3f' % mean_squared_error(y_test_dummy, y_pred))
+  #print('MAE: %.3f' % mean_absolute_error(y_test_dummy, y_pred))
 
-print('Multi regression for class ', variabili[0])
-print('Coefficients: \n', reg.coef_)
-print('Intercept: \n', reg.intercept_)
+for element in variabili:
+  dummy_x_tr=X_train_df.loc[:, X_train_df.columns != element]
+  dummy_y_tr=X_train_df[[element]]
+  dummy_x_te=X_test_df.loc[:, X_test_df.columns != element]
+  dummy_y_te=X_test_df[[element]]
+  X_test_dummy = dummy_x_te.values
+  y_train_dummy = dummy_y_tr.values
+  X_train_dummy = dummy_x_tr.values
+  y_test_dummy = dummy_y_te.values
 
-print('R2: %.3f' % r2_score(y_test_dummy, y_pred))
-print('MSE: %.3f' % mean_squared_error(y_test_dummy, y_pred))
-print('MAE: %.3f' % mean_absolute_error(y_test_dummy, y_pred))
+  reg = Ridge()
+  reg.fit(X_train_dummy, y_train_dummy)
+  y_pred = reg.predict(X_test_dummy)
+  print('Multi regression for class ', element)
+  print('Coefficients: \n', reg.coef_)
+  print('Intercept: \n', reg.intercept_)
+  print('R2: %.3f' % r2_score(y_test_dummy, y_pred))
+  #print('MSE: %.3f' % mean_squared_error(y_test_dummy, y_pred))
+  #print('MAE: %.3f' % mean_absolute_error(y_test_dummy, y_pred))
 
 """# Logistic Regression
 
