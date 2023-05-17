@@ -1,8 +1,30 @@
-# Citation
+# Project Guidelines
 
-Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. A Public Domain Dataset for Human Activity Recognition Using Smartphones. 21th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning, ESANN 2013. Bruges, Belgium 24-26 April 2013.
+* Module 1 - Imbalanced Learning, Dimensionality Reduction, Anomaly Detection
+    1. Explore and prepare the dataset. You are allowed to take inspiration from existing notebooks you can find online and figure out your personal research perspective (from choosing a subset of variables to the class to predict…). You are welcome in creating new variables and performing all the pre-processing steps the dataset needs.
+    1. Define one or more (simple) classification tasks and solve them with Decision Tree and KNN.
+    1. Identify the top 1% outliers: adopt at least three different methods from different families (e.g., density-based, angle-based… ) and compare the results. Deal with the outliers by removing them from the dataset or by treating the anomalous variables as missing values and employing replacement techniques. In this second case, you should check that the outliers are not outliers anymore. Justify your choices in every step.
+    1. Analyze the value distribution of the class to predict with respect to point 2; if it is unbalanced leave it as it is, otherwise turns the dataset into an imbalanced version (e.g., 96% - 4%, for binary classification). Then solve the classification task using the Decision Tree or the KNN by adopting various techniques of imbalanced learning.
+    1. Exploit and tests different dimensionality reduction techniques for (i) visualization in two dimensions, (ii) improve classification performance, (iii) improve outlier detection.
+    1. Draw your conclusions about the techniques adopted in this analysis.
+* Module 2 - Advanced Classification Methods
+    1. Solve the classification task defined in Module 1 (or define new ones) with the other classification methods analyzed during the course: Naive Bayes Classifier, Logistic Regression, Support Vector Machines, Neural Networks, Ensemble Methods, Gradient Boosting Machines and evaluate each classifier with the techniques presented in DM1 (accuracy, precision, recall, F1-score, ROC curve). Perform hyper-parameter tuning phases and justify your choices.
+    1. Besides the numerical evaluation draw your conclusions about the various classifiers, e.g. for Neural Networks: what are the parameter sets or the convergence criteria which avoid overfitting? For Ensemble classifiers how the number of base models impact the classification performance? For any classifier which is the minimum amount of data required to guarantee an acceptable level of performance? Is this level the same for any classifier? What is revealing the feature importance of Random Forests?
+    1. Select two continuous attributes, define a simple linear univariate regression problem and try to solve it using different techniques reporting various evaluation measures. Plot the two-dimensional dataset. Then generalize to multiple linear regression and observe how the performance varies. Solve it using linear regressions, regularized linear regressions (such as Lasso and Ridge) but also machine learning approaches such as Gradient Boosting Machines.
+* Module 3 - Time Series Analysis
+    1. Prepare a dataset on which you can run time series clustering; motif/anomaly discovery and classification.
+    1. On the dataset created, compute classification with KNN based on Euclidean/Manhattan and DTW distances and compare the results.
+    1. To perform the clustering you can choose among different distance functions and clustering algorithms. Remember that you can reduce the dimensionality through time series approximation. Analyze the clusters and highlight similarities and differences.
+    1. Analyze the dataset for finding motifs and/or anomalies. Visualize and discuss them and their relationship with other features.
+    1. Solve the classification task on the time series dataset(s) and evaluate each result. In particular, you should use shapelet-based classifiers and structural-based classifiers. Analyze the shapelets retrieved and discuss if there are any similarities/differences with motifs and/or shapelets.
+* Module 4 - Sequential Patterns and Advanced Clustering
+    1. Sequential Pattern Mining: Convert the time series into a discrete format (e.g., by using SAX) and extract the most frequent sequential patterns (of at least length 3/4) using different values of support, then discuss the most interesting sequences.
+    1. Advanced Clustering: On a dataset already prepared for one of the previous tasks in Module 1 or Module 2, run at least one clustering algorithm presented in the advanced clustering lectures (e.g. X-Means, Bisecting K-Means, OPTICS). Discuss the results that you find analyzing the clusters and reporting external validation measures (e.g SSE, silhouette).
+* Module 5 - Explainability
+Try to use one or more explanation methods (e.g., TREPAN, LIME, LORE, SHAP, Counterfactual Explainers, etc.) to illustrate the reasons for the classification in one of the steps of the previous tasks.
 
-# README
+
+# About the dataset
 
 The experiments have been carried out with a group of **30 volunteers** within an age bracket of 19-48 years. Each person performed **six activities** (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a **smartphone** (Samsung Galaxy S II) on the waist. Using its embedded **accelerometer and gyroscope**, we captured 3-axial **linear acceleration** and 3-axial **angular velocity** at a constant rate of 50Hz. The experiments have been video-recorded to label the data manually. The obtained **dataset has been randomly partitioned into two sets**, where **70%** of the volunteers was selected for generating the **training data** and **30% the test data**. 
 
@@ -123,3 +145,7 @@ Additional vectors obtained by averaging the signals in a signal window sample. 
 - tBodyGyroJerkMean
 
 The complete list of variables of each feature vector is available in 'features.txt'
+
+Reference
+=========
+For more information see: Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. A Public Domain Dataset for Human Activity Recognition Using Smartphones. 21th European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning, ESANN 2013. Bruges, Belgium 24-26 April 2013.
