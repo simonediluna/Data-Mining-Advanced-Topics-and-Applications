@@ -1,3 +1,6 @@
+# Authors
+Simone Di Luna, [@Giulio Cordova](https://github.com/zenith378), [@Lia Trapanese](https://github.com/lia-trapanese)
+
 # Project Guidelines
 
 * Module 1 - Imbalanced Learning, Dimensionality Reduction, Anomaly Detection
